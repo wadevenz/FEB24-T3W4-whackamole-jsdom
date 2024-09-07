@@ -14,6 +14,9 @@ let gameRunningInfoContainer = document.getElementById("gameRunningInfo");
 let gamePlayContainer = document.getElementById("gamePlayArea");
 let spawnableAreas = document.getElementsByClassName("whackamoleSpawnArea");
 let spawningInterval = null;
+let fastSpawningInterval = null;
+let despawnerInterval = null;
+
 
 // because of function hoisting, we can call these functions before they are declared.
 // THese are called as soon as the page loads
@@ -29,12 +32,11 @@ Array.from(spawnableAreas).forEach(area => {
 function toggleCursor(){
     let bodyElement = document.getElementsByTagName("body")[0];
     if (gameTimeRemaining > 0) {
-        bodyElement.style.cursor = "url(./assets/hammer.gif), auto";
+        bodyElement.style.cursor = "url(./assets/Mjolnir.png), auto";
     } else {
         bodyElement.style.cursor= "";
     }
 }
-
 
 
 // Game Score and Timer
@@ -51,6 +53,11 @@ function gameTimeStep(){
 
 
 async function spawnMole(){
+    // handle the bug where a pokemon appears post game
+    if (gameTimeRemaining <= 0){
+        return;
+    }
+
     // pick a random spawnable area
     let randomNumberWithinArrayRange = Math.floor(Math.random() * spawnableAreas.length);
     let chosenSpawnArea = spawnableAreas[randomNumberWithinArrayRange];
@@ -88,6 +95,14 @@ function whackamoleHandleClick(event){
     }
 }
 
+function deleteRandomWhackamole() {
+    // pick one random spawnableArea
+    let randomNumberWithinArrayRange = Math.floor(Math.random() * spawnableAreas.length);
+    let chosenSpawnArea = spawnableAreas[randomNumberWithinArrayRange];
+
+    // set its src property tp ""
+    chosenSpawnArea.src = "";
+}
 
 
 
@@ -172,11 +187,17 @@ function startGame(desiredGameTime = defaultGameDuration){
 
     gameUpdateInterval = setInterval(gameTimeStep, 100)
 
-    // TODO: Refactor for multiple spawningINtervals or find a way to make it
+    // TODO: Refactor for multiple spawningIntervals or find a way to make it
     // a differnet duration on each repetition
-    spawningInterval = setInterval(() => {
+    fasspawningInterval = setInterval(() => {
         spawnMole();
     }, 1000);
+    fastSpawningInterval = setInterval(() => {
+        spawnMole();
+    }, 500);
+    despawnerInterval = setInterval(() => {
+        deleteRandomWhackamole();
+    }, 500);
 
 }
 
@@ -192,6 +213,8 @@ function stopGame() {
     clearInterval(gameCountdownInterval);
     clearInterval(gameUpdateInterval);
     clearInterval(spawningInterval);
+    clearInterval(fastSpawningInterval);
+    clearInterval(despawnerInterval);
 
     // add another step so time remaining gets to 0
     gameTimeStep();
