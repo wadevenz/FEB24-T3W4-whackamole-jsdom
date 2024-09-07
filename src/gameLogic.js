@@ -26,6 +26,14 @@ Array.from(spawnableAreas).forEach(area => {
     });
 });
 
+function toggleCursor(){
+    let bodyElement = document.getElementsByTagName("body")[0];
+    if (gameTimeRemaining > 0) {
+        bodyElement.style.cursor = "url(./assets/hammer.gif), auto";
+    } else {
+        bodyElement.style.cursor= "";
+    }
+}
 
 
 
@@ -65,7 +73,7 @@ async function spawnMole(){
 function wipeImagesFromSpawningAreas(){
     // loop through spawnableAreas
     // set the src property of each thing to ""
-    console.log(spawnableAreas);
+    // console.log(spawnableAreas);
     // spawnable areas is a HTML Collection not strictly an array therefore the array.from
     Array.from(spawnableAreas).forEach(area => {
         area.src = "";
@@ -146,6 +154,8 @@ function startGame(desiredGameTime = defaultGameDuration){
     // toggle game play content
     toggleGamePlayContent();
 
+    toggleCursor();
+
 
     gameCountdownInterval = setInterval(() => {
         gameTimeRemaining -= 1;
@@ -190,9 +200,11 @@ function stopGame() {
     toggleGameControlButtons();
 
     // toggle game play content
-    toggleGamePlayContent();
+    // toggleGamePlayContent();
 
     wipeImagesFromSpawningAreas();
+
+    toggleCursor();
 
     console.log("Stopped the game. Game time remaining is now: " + gameTimeRemaining)
 }
